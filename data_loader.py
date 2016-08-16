@@ -4,6 +4,7 @@ import re
 import numpy as np
 import pickle
 from Utils import word_embeddings
+import argparse
 
 def load_captions_data(data_dir):
 	ic_train_file = join(data_dir, 'annotations/captions_train2014.json')
@@ -16,7 +17,7 @@ def load_captions_data(data_dir):
 			all_data = pickle.load(f)
 			print "Max length", all_data['max_caption_length']
 			print "Total Words", len(all_data['caption_dic']), all_data['word_embedding_lookup'].shape
-			print "Total Captions", len(all_data['training_ic_data'])
+			print "Total Training Captions", len(all_data['training_ic_data'])
 			return all_data
 
 	with open(ic_train_file) as f:
@@ -102,6 +103,7 @@ def make_caption_word_dictionary(ic_train, ic_val, embeddingg_vocab, embedding_w
 	return caption_dic, word_embedding_lookup, max_length
 
 def extract_data(ic_annotations, caption_dic, embeddingg_vocab, max_length):
+	import h5py
 	data = []
 	word_regex = re.compile(r'\w+')
 	for annotation in ic_annotations:
@@ -131,6 +133,38 @@ def extract_data(ic_annotations, caption_dic, embeddingg_vocab, max_length):
 	print "Raw Data", len(ic_annotations)
 	return data
 
+def load_images(data_dir, split, image_size):
+	import h5py
+	captions_data = load_captions_data(data_dir)
+	if split == 'train':
+		captions = captions_data['training_ic_data']
+	else:
+		captions = captions_data['val_ic_data']
+	
+	image_ids = {}
+	for cap in captions:
+		image_ids[cap['image_id']] = True
+
+	image_id_list = []
+	image_features = np.array((len(image_ids), image_size, image_size, image_size, 3))
+	idx = 0
+	for image_id in image_ids:
+		break
+		image_file = join(args.data_dir, '%s2014/COCO_%s2014_%.12d.jpg'%(split, split, image_id) )
+		image_array = image_processing.load_image_array(image_file, image_size)
+		image_features[idx,:,:,:] = image_array
+		image_id_list.append(image_id)
+		idx += 1
+
+	h5f_image_features = h5py.File( join(data_dir, split + '_image_features.h5'), 'w')
+	h5f_image_features.create_dataset('image_features', data=image_features)
+	h5f_image_features.close()
+
+	with open( join(data_dir, split+'_image_id_list.pkl'), 'wb') as f:
+		pickle.dump(image_id_list, f)
+
+
+
 # FOR SANITY CHECK
 # def reconstruct_caption(caption, caption_words, caption_dic, word_embedding_lookup):
 # 	caption_dic_indexed = {}
@@ -145,7 +179,18 @@ def extract_data(ic_annotations, caption_dic, embeddingg_vocab, max_length):
 # 		else:
 # 			print word_embedding_lookup[c]
 
+def main():
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--split', type=str, default='train',
+                       help='train/val')
+	parser.add_argument('--data_dir', type=str, default='Data',
+                       help='Data directory')
+	parser.add_argument('--image_size', type=str, default=64,
+                       help='Image Size')
+
+	args = parser.parse_args()
+	load_images(args.data_dir, args.split, args.image_size)
 
 if __name__ == '__main__':
-	load_captions_data('Data')
+	main()
 
