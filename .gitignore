@@ -1,0 +1,15 @@
+.DS_Store
+!Data/
+Data/*
+!Data/download_data.sh
+.idea*
+*.pdf
+*.jpg
+*.pyc
+sample.py
+vggtest.py
+*.pem
+amazon_ssh.sh
+awstransfer.sh
+localtrain.py
+vislstm.png
