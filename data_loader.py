@@ -4,7 +4,9 @@ import re
 import numpy as np
 import pickle
 from Utils import word_embeddings
+from Utils import image_processing
 import argparse
+import gc
 
 def load_captions_data(data_dir):
 	ic_train_file = join(data_dir, 'annotations/captions_train2014.json')
@@ -25,7 +27,7 @@ def load_captions_data(data_dir):
 	with open(ic_val_file) as f:
 		ic_val = json.loads(f.read())
 
-	embedding_w, embeddingg_vocab = word_embeddings.load_word_embeddings(data_dir, 'glove.6B/glove.6B.50d.txt')
+	embedding_w, embeddingg_vocab = word_embeddings.load_word_embeddings(data_dir, 'glove.6B/glove.6B.300d.txt')
 	caption_dic, word_embedding_lookup, max_length = make_caption_word_dictionary(ic_train, ic_val, embeddingg_vocab, embedding_w)
 	print "Len caption dic", len(caption_dic)
 	
@@ -66,6 +68,7 @@ def load_captions_data(data_dir):
 	print "Total Words", len(caption_dic)
 	print "Training Data", len(training_ic_data)
 	print "Validation Data", len(val_ic_data)
+	return all_data
 	# return all_data
 
 def make_caption_word_dictionary(ic_train, ic_val, embeddingg_vocab, embedding_w):
@@ -133,6 +136,17 @@ def extract_data(ic_annotations, caption_dic, embeddingg_vocab, max_length):
 	print "Raw Data", len(ic_annotations)
 	return data
 
+# def get_training_batch(ic_data, batch_no, batch_size):
+# 	start_index = batch_no * batch_size
+# 	end_index = start_index + batch_size
+
+# 	batch = {
+# 		'caption' : 
+# 	}
+# 	for idx in range(start_index, end_index):
+# 		new_idx = idx % len(ic_data)
+
+
 def load_images(data_dir, split, image_size):
 	import h5py
 	captions_data = load_captions_data(data_dir)
@@ -144,17 +158,22 @@ def load_images(data_dir, split, image_size):
 	image_ids = {}
 	for cap in captions:
 		image_ids[cap['image_id']] = True
-
+	print len(image_ids)
 	image_id_list = []
-	image_features = np.array((len(image_ids), image_size, image_size, image_size, 3))
+	gc.collect()
+	image_features = np.zeros((len(image_ids), image_size, image_size, 3))
 	idx = 0
+	print "Shae",image_features.shape
+
+	print "Total Images", len(image_ids)
 	for image_id in image_ids:
-		break
-		image_file = join(args.data_dir, '%s2014/COCO_%s2014_%.12d.jpg'%(split, split, image_id) )
+		image_file = join(data_dir, '%s2014/COCO_%s2014_%.12d.jpg'%(split, split, image_id) )
 		image_array = image_processing.load_image_array(image_file, image_size)
 		image_features[idx,:,:,:] = image_array
 		image_id_list.append(image_id)
+		print "Progress..", 1.0 * idx/len(image_ids), idx
 		idx += 1
+		
 
 	h5f_image_features = h5py.File( join(data_dir, split + '_image_features.h5'), 'w')
 	h5f_image_features.create_dataset('image_features', data=image_features)
