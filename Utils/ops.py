@@ -5,7 +5,6 @@ import tensorflow as tf
 
 from tensorflow.python.framework import ops
 
-from utils import *
 
 class batch_norm(object):
 	"""Code modification of http://stackoverflow.com/a/33950177"""

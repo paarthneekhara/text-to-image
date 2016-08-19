@@ -5,6 +5,7 @@ Data/*
 .idea*
 *.pdf
 *.jpg
+*.png
 *.pyc
 sample.py
 vggtest.py
@@ -13,3 +14,6 @@ amazon_ssh.sh
 awstransfer.sh
 localtrain.py
 vislstm.png
+sample_aws.sh
+eval_trec.py
+theanotest.py
