@@ -24,7 +24,7 @@ def main():
 					   help='df_dim')
 	parser.add_argument('--gfc_dim', type=int, default=1024,
 					   help='gfc_dim')
-	parser.add_argument('--caption_vector_length', type=int, default=4800,
+	parser.add_argument('--caption_vector_length', type=int, default=2400,
 					   help='caption_vector_length')
 
 	parser.add_argument('--data_dir', type=str, default="Data",
@@ -57,10 +57,10 @@ def main():
 		meta_data = pickle.load(f)
 
 	gan = model.GAN(model_options)
-	input_tensors, variables, loss, outputs = gan.build_model()
+	input_tensors, variables, loss, outputs, checks = gan.build_model()
 
-	d_optim = tf.train.AdamOptimizer(args.learning_rate, beta1=args.beta1).minimize(loss['d_loss'], var_list=variables['d_vars'])
-	g_optim = tf.train.AdamOptimizer(args.learning_rate, beta1=args.beta1).minimize(loss['g_loss'], var_list=variables['g_vars'])
+	d_optim = tf.train.AdamOptimizer(args.learning_rate, beta1 = args.beta1).minimize(loss['d_loss'], var_list=variables['d_vars'])
+	g_optim = tf.train.AdamOptimizer(args.learning_rate, beta1 = args.beta1).minimize(loss['g_loss'], var_list=variables['g_vars'])
 
 	sess = tf.InteractiveSession()
 	tf.initialize_all_variables().run()
@@ -74,36 +74,69 @@ def main():
 		while batch_no*args.batch_size < meta_data['data_length']:
 			real_images, wrong_images, caption_vectors, z_noise = get_training_batch(batch_no, args.batch_size, 
 				args.image_size, args.z_dim, 'train', args.data_dir)
-			_, _, d_loss, g_loss, gen = sess.run([d_optim, g_optim, loss['d_loss'], loss['g_loss'], outputs['generator']],
+
+			# DISCR UPDATE
+			check_ts = [ checks['d_loss1'] , checks['d_loss2'], checks['d_loss3']]
+			_, d_loss, gen, d1, d2, d3 = sess.run([d_optim, loss['d_loss'], outputs['generator']] + check_ts,
 				feed_dict = {
 					input_tensors['t_real_image'] : real_images,
 					input_tensors['t_wrong_image'] : wrong_images,
 					input_tensors['t_real_caption'] : caption_vectors,
 					input_tensors['t_z'] : z_noise,
 				})
+
+			
+			print "d1", d1
+			print "d2", d2
+			print "d3", d3
+			print "D", d_loss
+			
+			
+			# GEN UPDATE
+			_, g_loss, gen = sess.run([g_optim, loss['g_loss'], outputs['generator']],
+				feed_dict = {
+					input_tensors['t_real_image'] : real_images,
+					input_tensors['t_wrong_image'] : wrong_images,
+					input_tensors['t_real_caption'] : caption_vectors,
+					input_tensors['t_z'] : z_noise,
+				})
+
+			
+			# GEN UPDATE TWICE, to make sure d_loss does not go to 0
+			_, g_loss, gen = sess.run([g_optim, loss['g_loss'], outputs['generator']],
+				feed_dict = {
+					input_tensors['t_real_image'] : real_images,
+					input_tensors['t_wrong_image'] : wrong_images,
+					input_tensors['t_real_caption'] : caption_vectors,
+					input_tensors['t_z'] : z_noise,
+				})
+
+			
+			
 			batch_no += 1
 			if (batch_no % 100) == 0:
 				print "Saving Images, Model"
 				save_for_vis(args.data_dir, real_images, gen)
 				save_path = saver.save(sess, "Data/Models/model_temp.ckpt")
-			print d_loss, g_loss, batch_no, i
+			print "LOSSES", d_loss, g_loss, batch_no, i
 		save_path = saver.save(sess, "Data/Models/model_epoch{}.ckpt".format(i))
 
 def save_for_vis(data_dir, real_images, generated_images):
 	
 	for i in range(0, real_images.shape[0]):
 		real_image_255 = np.zeros( (64,64,3), dtype=np.uint8)
-		real_images_255 = real_images[i,:,:,:] * 255
+		real_images_255 = (real_images[i,:,:,:])
 		scipy.misc.imsave( join(data_dir, 'samples/real_image_{}.jpg'.format(i)) , real_images_255)
 
 		fake_image_255 = np.zeros( (64,64,3), dtype=np.uint8)
-		fake_images_255 = generated_images[i,:,:,:] * 255
+		fake_images_255 = (generated_images[i,:,:,:])
 		scipy.misc.imsave(join(data_dir, 'samples/fake_image_{}.jpg'.format(i)), fake_images_255)
 
 
 def get_training_batch(batch_no, batch_size, image_size, z_dim, split, data_dir):
 	with h5py.File( join(data_dir, 'tvs/'+split + '_tvs_' + str(batch_no))) as hf:
 		caption_vectors = np.array(hf.get('tv'))
+		caption_vectors = caption_vectors[:,0:2400]
 	with h5py.File( join(data_dir, 'tvs/'+split + '_tv_image_id_' + str(batch_no))) as hf:
 		image_ids = np.array(hf.get('tv'))
 
@@ -119,6 +152,7 @@ def get_training_batch(batch_no, batch_size, image_size, z_dim, split, data_dir)
 		wrong_images[i,:,:,:] = real_images[batch_size-i-1,:,:,:]
 
 	z_noise = np.random.uniform(-1, 1, [batch_size, z_dim])
+
 
 	return real_images, wrong_images, caption_vectors, z_noise
 
