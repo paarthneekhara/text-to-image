@@ -8,6 +8,7 @@ import argparse
 import skipthoughts
 import h5py
 
+# DID NOT TRAIN IT ON MS COCO YET
 def save_caption_vectors_ms_coco(data_dir, split, batch_size):
 	meta_data = {}
 	ic_file = join(data_dir, 'annotations/captions_{}2014.json'.format(split))
@@ -26,7 +27,7 @@ def save_caption_vectors_ms_coco(data_dir, split, batch_size):
 		captions = []
 		image_ids = []
 		idx = batch_no
-		for i in range(batch_no*batch_size, (batch_no+1)*batch_size):
+		for i in range(batch_sizeatch_no*batch_size, (batch_no+1)*batch_size):
 			idx = i%len(ic_data['annotations'])
 			captions.append(ic_data['annotations'][idx]['caption'])
 			image_ids.append(ic_data['annotations'][idx]['image_id'])
@@ -46,9 +47,10 @@ def save_caption_vectors_ms_coco(data_dir, split, batch_size):
 		print "Batches Done", batch_no, len(ic_data['annotations'])/batch_size
 		batch_no += 1
 
+
 def save_caption_vectors_flowers(data_dir):
 	import time
-
+	
 	img_dir = join(data_dir, 'flowers/jpg')
 	image_files = [f for f in os.listdir(img_dir) if 'jpg' in f]
 	print image_files[300:400]
