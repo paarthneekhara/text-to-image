@@ -1,6 +1,14 @@
 .DS_Store
 !Data/
+!Data/Models/
+!Data/samples/
+!Data/val_samples/
+!Data/skipthoughts/
 Data/*
+Data/Models/*
+Data/samples/*
+Data/val_samples/*
+Data/skipthoughts/*
 !Data/download_data.sh
 .idea*
 *.pdf
