@@ -72,7 +72,7 @@ python data_loader.py --data_set="flowers"
 - The train-val split is 0.75.
 
 ## Pre-trained Models
-- Download the pretrained model from [here] and save it in ```Data/Models```. Use this path for generating the images.
+- Download the pretrained model from [here][14] and save it in ```Data/Models```. Use this path for generating the images.
 
 ## TODO
 - Train the model on the MS-COCO data set, and generate more generic images.
