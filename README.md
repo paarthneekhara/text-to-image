@@ -1,6 +1,6 @@
 # Text To Image Synthesis Using Thought Vectors
 
-This is an experimental tensorflow implementation of synthesizing Images from captions using [Skip Thought Vectors][1]. The images are synthesized using the GAN-CLS Algorithm from the paper [Generative Adversarial Text-to-Image Synthesis][2]. This implementation is built on top of the excellent [DCGAN in Tensorflow][3]. The following is the model architecture. The blue bars represent the text encoding using Skip Thought Vectors.
+This is an experimental tensorflow implementation of synthesizing images from captions using [Skip Thought Vectors][1]. The images are synthesized using the GAN-CLS Algorithm from the paper [Generative Adversarial Text-to-Image Synthesis][2]. This implementation is built on top of the excellent [DCGAN in Tensorflow][3]. The following is the model architecture. The blue bars represent the Skip Thought Vectors for the captions.
 
 ![Model architecture](http://i.imgur.com/dNl2HkZ.jpg)
 
@@ -16,8 +16,8 @@ Image Source : [Generative Adversarial Text-to-Image Synthesis][2] Paper
 
 ## Datasets
 - The model is currently trained on the [flowers dataset][9]. Download the images from [this link][9] and save them in ```Data/flowers/jpg```. Also download the captions from [this link][10]. Extract the archive, copy the ```text_c_10``` folder and paste it in ```Data/flowers```.
-- Download the pretrained models and vocabulary for skip thought vectors as per the instructions give [here][13]. Save the downloaded files in ```Data/skipthoughts```.
-- Make empty directories in Data, ```Data/samples```,  ```Data/val_samples``` and ```Data/Models```. They will be used for sampling the generated images, while training.
+- Download the pretrained models and vocabulary for skip thought vectors as per the instructions given [here][13]. Save the downloaded files in ```Data/skipthoughts```.
+- Make empty directories in Data, ```Data/samples```,  ```Data/val_samples``` and ```Data/Models```. They will be used for sampling the generated images and saving the trained models.
 
 ## Usage
 - <b>Data Processing</b> : Extract the skip thought vectors for the flowers data set using :
@@ -49,16 +49,34 @@ python data_loader.py --data_set="flowers"
   ```
   * Generate the Images for the thought vectors using:
   ```
-  python generate_images.py --model_path=<path to the trained model>
+  python generate_images.py --model_path=<path to the trained model> --n_images=8
   ```
+   ```n_images``` specifies the number of images to be generated per caption. The generated images will be saved in ```Data/val_samples/```. ```python generate_images.py --help``` for more options.
 
 ## Sample Images Generated
-| Caption        | Actual Image           | Generated Images  |
-| ------------- |:-------------:| -----:|
+| Caption        | Generated Images  |
+| ------------- | -----:|
+| the flower shown has yellow anther red pistil and bright red petals        | ![](http://i.imgur.com/SknZ3Sg.jpg)   |
+| this flower has petals that are yellow, white and purple and has dark lines        | ![](http://i.imgur.com/8zsv9Nc.jpg)   |
+| the petals on this flower are white with a yellow center        | ![](http://i.imgur.com/vvzv1cE.jpg)   |
+| this flower has a lot of small round pink petals.        | ![](http://i.imgur.com/w0zK1DC.jpg)   |
+| this flower is orange in color, and has petals that are ruffled and rounded.        | ![](http://i.imgur.com/VfBbRP1.jpg)   |
+| the flower has yellow petals and the center of it is brown        | ![](http://i.imgur.com/IAuOGZY.jpg)   |
+
+
+## Implementation Details
+- Only the uni-skip vectors from the skip thought vectors are used. I have not tried training the model with combine-skip vectors.
+- The model was trained for around 200 epochs on a GPU. This took roughly 2-3 days.
+- The images generated are 64 x 64 in dimension.
+- While processing the batches before training, the images are flipped horizontally with a probability of 0.5.
+- The train-val split is 0.75.
+
+## Pre-trained Models
+- Download the pretrained model from [here] and save it in ```Data/Models```. Use this path for generating the images.
 
 ## TODO
-- Train the model on MS-COCO data set. The dataset is huge and with the resource I have, it will take several days to train the model.
-- Try out different caption embeddings. Also try to train the caption embedding RNN along with the model.
+- Train the model on the MS-COCO data set, and generate more generic images.
+- Try different embedding options for captions(other than skip thought vectors). Also try to train the caption embedding RNN along with the GAN-CLS model. 
 
 ## References
 - [Generative Adversarial Text-to-Image Synthesis][2] Paper
@@ -83,3 +101,4 @@ python data_loader.py --data_set="flowers"
 [11]:https://github.com/reedscot/icml2016
 [12]:https://github.com/ryankiros/skip-thoughts
 [13]:https://github.com/ryankiros/skip-thoughts#getting-started
+[14]:https://drive.google.com/folderview?id=0B30fmeZ1slbBWmlodTFPamRkLVU&usp=sharing
