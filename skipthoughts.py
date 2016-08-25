@@ -1,5 +1,6 @@
 '''
 Skip-thought vectors
+https://github.com/ryankiros/skip-thoughts
 '''
 import os
 

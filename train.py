@@ -9,6 +9,8 @@ from Utils import image_processing
 import scipy.misc
 import random
 import json
+import os
+import shutil
 
 def main():
 	parser = argparse.ArgumentParser()
@@ -88,7 +90,7 @@ def main():
 	for i in range(args.epochs):
 		batch_no = 0
 		while batch_no*args.batch_size < loaded_data['data_length']:
-			real_images, wrong_images, caption_vectors, z_noise = get_training_batch(batch_no, args.batch_size, 
+			real_images, wrong_images, caption_vectors, z_noise, image_files = get_training_batch(batch_no, args.batch_size, 
 				args.image_size, args.z_dim, args.caption_vector_length, 'train', args.data_dir, args.data_set, loaded_data)
 			
 			# DISCR UPDATE
@@ -128,10 +130,10 @@ def main():
 			batch_no += 1
 			if (batch_no % args.save_every) == 0:
 				print "Saving Images, Model"
-				save_for_vis(args.data_dir, real_images, gen)
-				save_path = saver.save(sess, "Data/Models/model_{}_temp.ckpt".format(args.data_set))
-
-		save_path = saver.save(sess, "Data/Models/model_{}_epoch_{}.ckpt".format(args.data_set, i))
+				save_for_vis(args.data_dir, real_images, gen, image_files)
+				save_path = saver.save(sess, "Data/Models/latest_model_{}_temp.ckpt".format(args.data_set))
+		if i%5 == 0:
+			save_path = saver.save(sess, "Data/Models/model_after_{}_epoch_{}.ckpt".format(args.data_set, i))
 
 def load_training_data(data_dir, data_set):
 	if data_set == 'flowers':
@@ -158,12 +160,15 @@ def load_training_data(data_dir, data_set):
 		# No preloading for MS-COCO
 		return meta_data
 
-def save_for_vis(data_dir, real_images, generated_images):
+def save_for_vis(data_dir, real_images, generated_images, image_files):
 	
+	shutil.rmtree( join(data_dir, 'samples') )
+	os.makedirs( join(data_dir, 'samples') )
+
 	for i in range(0, real_images.shape[0]):
 		real_image_255 = np.zeros( (64,64,3), dtype=np.uint8)
 		real_images_255 = (real_images[i,:,:,:])
-		scipy.misc.imsave( join(data_dir, 'samples/real_image_{}.jpg'.format(i)) , real_images_255)
+		scipy.misc.imsave( join(data_dir, 'samples/{}_{}.jpg'.format(i, image_files[i].split('/')[-1] )) , real_images_255)
 
 		fake_image_255 = np.zeros( (64,64,3), dtype=np.uint8)
 		fake_images_255 = (generated_images[i,:,:,:])
@@ -182,10 +187,12 @@ def get_training_batch(batch_no, batch_size, image_size, z_dim,
 		real_images = np.zeros((batch_size, 64, 64, 3))
 		wrong_images = np.zeros((batch_size, 64, 64, 3))
 		
+		image_files = []
 		for idx, image_id in enumerate(image_ids):
 			image_file = join(data_dir, '%s2014/COCO_%s2014_%.12d.jpg'%(split, split, image_id) )
 			image_array = image_processing.load_image_array(image_file, image_size)
 			real_images[idx,:,:,:] = image_array
+			image_files.append(image_file)
 		
 		# TODO>> As of Now, wrong images are just shuffled real images.
 		first_image = real_images[0,:,:,:]
@@ -198,7 +205,7 @@ def get_training_batch(batch_no, batch_size, image_size, z_dim,
 		z_noise = np.random.uniform(-1, 1, [batch_size, z_dim])
 
 
-		return real_images, wrong_images, caption_vectors, z_noise
+		return real_images, wrong_images, caption_vectors, z_noise, image_files
 
 	if data_set == 'flowers':
 		real_images = np.zeros((batch_size, 64, 64, 3))
@@ -206,6 +213,7 @@ def get_training_batch(batch_no, batch_size, image_size, z_dim,
 		captions = np.zeros((batch_size, caption_vector_length))
 
 		cnt = 0
+		image_files = []
 		for i in range(batch_no * batch_size, batch_no * batch_size + batch_size):
 			idx = i % len(loaded_data['image_list'])
 			image_file =  join(data_dir, 'flowers/jpg/'+loaded_data['image_list'][idx])
@@ -219,10 +227,11 @@ def get_training_batch(batch_no, batch_size, image_size, z_dim,
 
 			random_caption = random.randint(0,4)
 			captions[cnt,:] = loaded_data['captions'][ loaded_data['image_list'][idx] ][ random_caption ][0:caption_vector_length]
+			image_files.append( image_file )
 			cnt += 1
 
 		z_noise = np.random.uniform(-1, 1, [batch_size, z_dim])
-		return real_images, wrong_images, captions, z_noise
+		return real_images, wrong_images, captions, z_noise, image_files
 
 if __name__ == '__main__':
 	main()

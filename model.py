@@ -3,7 +3,7 @@ from Utils import ops
 
 class GAN:
 	'''
-	OPTIONs
+	OPTIONS
 	z_dim : Noise dimension 100
 	t_dim : Text feature dimension 256
 	image_size : Image Dimension 64

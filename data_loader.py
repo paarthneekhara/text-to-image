@@ -90,9 +90,6 @@ def save_caption_vectors_flowers(data_dir):
 		h.create_dataset(key, data=encoded_captions[key])
 	h.close()
 			
-		
-
-
 def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--split', type=str, default='train',

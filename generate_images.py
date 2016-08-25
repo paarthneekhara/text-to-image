@@ -38,7 +38,7 @@ def main():
 	parser.add_argument('--data_dir', type=str, default="Data",
 					   help='Data Directory')
 
-	parser.add_argument('--model_path', type=str, default='Data/Models/model_flowers_temp.ckpt',
+	parser.add_argument('--model_path', type=str, default='Data/Models/latest_model_flowers_temp.ckpt',
                        help='Trained Model Path')
 
 	parser.add_argument('--n_images', type=int, default=5,
@@ -89,12 +89,17 @@ def main():
 
 	for f in os.listdir( join(args.data_dir, 'val_samples')):
 		if os.path.isfile(f):
-			os.unlink(f)
+			os.unlink(join(args.data_dir, 'val_samples/' + f))
 
 	for cn in range(0, len(caption_vectors)):
+		caption_images = []
 		for i, im in enumerate( caption_image_dic[ cn ] ):
-			im_name = "caption_{}_{}.jpg".format(cn, i)
-			scipy.misc.imsave( join(args.data_dir, 'val_samples/{}'.format(im_name)) , im)
+			# im_name = "caption_{}_{}.jpg".format(cn, i)
+			# scipy.misc.imsave( join(args.data_dir, 'val_samples/{}'.format(im_name)) , im)
+			caption_images.append( im )
+			caption_images.append( np.zeros((64, 5, 3)) )
+		combined_image = np.concatenate( caption_images[0:-1], axis = 1 )
+		scipy.misc.imsave( join(args.data_dir, 'val_samples/combined_image_{}.jpg'.format(cn)) , combined_image)
 
 
 if __name__ == '__main__':
