@@ -54,6 +54,7 @@ python data_loader.py --data_set="flowers"
    ```n_images``` specifies the number of images to be generated per caption. The generated images will be saved in ```Data/val_samples/```. ```python generate_images.py --help``` for more options.
 
 ## Sample Images Generated
+These are some sample images synthesised from the captions.
 | Caption        | Generated Images  |
 | ------------- | -----:|
 | the flower shown has yellow anther red pistil and bright red petals        | ![](http://i.imgur.com/SknZ3Sg.jpg)   |
