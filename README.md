@@ -15,8 +15,8 @@ Image Source : [Generative Adversarial Text-to-Image Synthesis][2] Paper
 - [NLTK][8] : for skip thought vectors
 
 ## Datasets
-- The model is currently trained on the [flowers dataset][9]. Download the images from [this link][9] and save them in ```Data/flowers/jpg```. Also download the captions from [this link][10]. Extract the archive and copy the ```text_c_10``` folder and paste it in ```Data/flowers```.
-- Download the pretrained models and vocabulary for skip thought vectors as per the instructions give [here][]. Save the downloaded files in ```Data/skipthoughts```.
+- The model is currently trained on the [flowers dataset][9]. Download the images from [this link][9] and save them in ```Data/flowers/jpg```. Also download the captions from [this link][10]. Extract the archive, copy the ```text_c_10``` folder and paste it in ```Data/flowers```.
+- Download the pretrained models and vocabulary for skip thought vectors as per the instructions give [here][13]. Save the downloaded files in ```Data/skipthoughts```.
 - Make empty directories in Data, ```Data/samples```,  ```Data/val_samples``` and ```Data/Models```. They will be used for sampling the generated images, while training.
 
 ## Usage
@@ -82,3 +82,4 @@ python data_loader.py --data_set="flowers"
 [10]:https://drive.google.com/file/d/0B0ywwgffWnLLcms2WWJQRFNSWXM/view
 [11]:https://github.com/reedscot/icml2016
 [12]:https://github.com/ryankiros/skip-thoughts
+[13]:https://github.com/ryankiros/skip-thoughts#getting-started
