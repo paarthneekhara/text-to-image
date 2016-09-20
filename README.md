@@ -106,4 +106,4 @@ MIT
 [11]:https://github.com/reedscot/icml2016
 [12]:https://github.com/ryankiros/skip-thoughts
 [13]:https://github.com/ryankiros/skip-thoughts#getting-started
-[14]:https://drive.google.com/folderview?id=0B30fmeZ1slbBWmlodTFPamRkLVU&usp=sharing
+[14]:https://bitbucket.org/paarth_neekhara/texttomimagemodel/raw/74a4bbaeee26fe31e148a54c4f495694680e2c31/latest_model_flowers_temp.ckpt
