@@ -1,0 +1,7 @@
+h5py==2.6.0
+nltk==3.2.1
+numpy==1.11.2
+scipy==0.16.0
+scikit_image==0.12.3
+tensorflow==0.11.0rc0
+Theano==0.8.2
