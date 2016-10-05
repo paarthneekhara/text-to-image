@@ -4,6 +4,7 @@
 *.jpg
 *.png
 *.pyc
+*.py.bak
 sample.py
 vggtest.py
 *.pem
