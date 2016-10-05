@@ -81,6 +81,11 @@ def download_dataset(data_name):
             urlretrieve(src_url, os.path.join(SKIPTHOUGHTS_DIR, filename),
                         reporthook=dl_progress_hook)
 
+    elif data_name == 'nltk_punkt':
+        import nltk
+        print('== NLTK pre-trained Punkt tokenizer for English ==')
+        nltk.download('punkt')
+
     elif data_name == 'pretrained_model':
         print('== Pretrained model ==')
         MODEL_DIR = os.path.join(DATA_DIR, 'Models')
@@ -102,6 +107,7 @@ def main():
     # TODO: make configurable via command-line
     download_dataset('flowers')
     download_dataset('skipthoughts')
+    download_dataset('nltk_punkt')
     download_dataset('pretrained_model')
     print('Done')
 
