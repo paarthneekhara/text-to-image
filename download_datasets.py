@@ -45,10 +45,8 @@ def download_dataset(data_name):
     if data_name == 'flowers':
         print('== Flowers dataset ==')
         flowers_dir = os.path.join(DATA_DIR, 'flowers')
-        flowers_jpg_dir = os.path.join(flowers_dir, 'jpg')
         flowers_jpg_tgz = os.path.join(flowers_dir, '102flowers.tgz')
         make_sure_path_exists(flowers_dir)
-        make_sure_path_exists(flowers_jpg_dir)
 
         # the original google drive link at https://drive.google.com/file/d/0B0ywwgffWnLLcms2WWJQRFNSWXM/view
         # from https://github.com/reedscot/icml2016 is problematic to download automatically, so included
@@ -64,7 +62,7 @@ def download_dataset(data_name):
                     reporthook=dl_progress_hook)
         print('Extracting ' + flowers_jpg_tgz)
         flowers_jpg_tar = tarfile.open(flowers_jpg_tgz, 'r:gz')
-        flowers_jpg_tar.extractall(flowers_jpg_dir)
+        flowers_jpg_tar.extractall(flowers_dir)  # archive contains jpg/ folder
 
     elif data_name == 'skipthoughts':
         print('== Skipthoughts models ==')
