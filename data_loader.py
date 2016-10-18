@@ -27,7 +27,7 @@ def save_caption_vectors_ms_coco(data_dir, split, batch_size):
 		captions = []
 		image_ids = []
 		idx = batch_no
-		for i in range(batch_sizeatch_no*batch_size, (batch_no+1)*batch_size):
+		for i in range(batch_no*batch_size, (batch_no+1)*batch_size):
 			idx = i%len(ic_data['annotations'])
 			captions.append(ic_data['annotations'][idx]['caption'])
 			image_ids.append(ic_data['annotations'][idx]['image_id'])
