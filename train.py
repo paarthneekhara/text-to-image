@@ -74,9 +74,9 @@ def main():
 	
 	gan = model.GAN(model_options)
 	input_tensors, variables, loss, outputs, checks = gan.build_model()
-	
-	d_optim = tf.train.AdamOptimizer(args.learning_rate, beta1 = args.beta1).minimize(loss['d_loss'], var_list=variables['d_vars'])
-	g_optim = tf.train.AdamOptimizer(args.learning_rate, beta1 = args.beta1).minimize(loss['g_loss'], var_list=variables['g_vars'])
+	with tf.variable_scope(tf.get_variable_scope(), reuse=False):
+		d_optim = tf.train.AdamOptimizer(args.learning_rate, beta1 = args.beta1).minimize(loss['d_loss'], var_list=variables['d_vars'])
+		g_optim = tf.train.AdamOptimizer(args.learning_rate, beta1 = args.beta1).minimize(loss['g_loss'], var_list=variables['g_vars'])
 	
 	sess = tf.InteractiveSession()
 	tf.initialize_all_variables().run()
