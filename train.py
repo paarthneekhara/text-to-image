@@ -1,16 +1,18 @@
-import tensorflow as tf
-import numpy as np
-import model
 import argparse
-import pickle
-from os.path import join
-import h5py
-from Utils import image_processing
-import scipy.misc
-import random
-import json
 import os
+import pickle
+import random
 import shutil
+from os.path import join
+
+import h5py
+import numpy as np
+import scipy.misc
+import tensorflow as tf
+
+import model
+from Utils import image_processing
+
 
 def main():
 	parser = argparse.ArgumentParser()
@@ -71,7 +73,7 @@ def main():
 		'caption_vector_length' : args.caption_vector_length
 	}
 	
-	
+	print('Initializing')
 	gan = model.GAN(model_options)
 	input_tensors, variables, loss, outputs, checks = gan.build_model()
 	
@@ -83,11 +85,14 @@ def main():
 	
 	saver = tf.train.Saver()
 	if args.resume_model:
+		print('Resuming model')
 		saver.restore(sess, args.resume_model)
-	
+
+	print('Loading training data: {}/{}'.format(args.data_dir, args.data_set))
 	loaded_data = load_training_data(args.data_dir, args.data_set)
 	
 	for i in range(args.epochs):
+		print('Epoch {}...'.format(i))
 		batch_no = 0
 		while batch_no*args.batch_size < loaded_data['data_length']:
 			real_images, wrong_images, caption_vectors, z_noise, image_files = get_training_batch(batch_no, args.batch_size, 
@@ -134,6 +139,7 @@ def main():
 				save_path = saver.save(sess, "Data/Models/latest_model_{}_temp.ckpt".format(args.data_set))
 		if i%5 == 0:
 			save_path = saver.save(sess, "Data/Models/model_after_{}_epoch_{}.ckpt".format(args.data_set, i))
+			print('Saved checkpoint file: ' + save_path)
 
 def load_training_data(data_dir, data_set):
 	if data_set == 'flowers':

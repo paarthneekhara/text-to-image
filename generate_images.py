@@ -1,15 +1,14 @@
-import tensorflow as tf
-import numpy as np
-import model
 import argparse
-import pickle
-from os.path import join
-import h5py
-from Utils import image_processing
-import scipy.misc
-import random
-import json
 import os
+from os.path import join
+
+import h5py
+import numpy as np
+import scipy.misc
+import tensorflow as tf
+
+import model
+
 
 def main():
 	parser = argparse.ArgumentParser()

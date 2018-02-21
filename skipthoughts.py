@@ -2,19 +2,16 @@
 Skip-thought vectors
 https://github.com/ryankiros/skip-thoughts
 '''
-import os
-
-import theano
-import theano.tensor as tensor
 
 import cPickle as pkl
-import numpy
-import copy
-import nltk
-
 from collections import OrderedDict, defaultdict
-from scipy.linalg import norm
+
+import nltk
+import numpy
+import theano
+import theano.tensor as tensor
 from nltk.tokenize import word_tokenize
+from scipy.linalg import norm
 
 profile = False
 

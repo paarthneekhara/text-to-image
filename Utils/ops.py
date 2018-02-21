@@ -1,6 +1,4 @@
 # RESUED CODE FROM https://github.com/carpedm20/DCGAN-tensorflow/blob/master/ops.py
-import math
-import numpy as np 
 import tensorflow as tf
 
 from tensorflow.python.framework import ops

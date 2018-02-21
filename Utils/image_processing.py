@@ -1,9 +1,11 @@
-import numpy as np
-from scipy import misc
 import random
+
+import numpy as np
 import skimage
 import skimage.io
 import skimage.transform
+from scipy import misc
+
 
 def load_image_array(image_file, image_size):
 	img = skimage.io.imread(image_file)

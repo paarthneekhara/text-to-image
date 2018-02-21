@@ -1,8 +1,8 @@
 # downloads/extracts datasets described in the README.md
 
+import errno
 import os
 import sys
-import errno
 import tarfile
 
 if sys.version_info >= (3,):

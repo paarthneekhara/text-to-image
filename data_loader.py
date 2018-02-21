@@ -1,12 +1,13 @@
+import argparse
 import json
 import os
-from os.path import join, isfile
-import re
-import numpy as np
 import pickle
-import argparse
-import skipthoughts
+from os.path import join
+
 import h5py
+
+import skipthoughts
+
 
 # DID NOT TRAIN IT ON MS COCO YET
 def save_caption_vectors_ms_coco(data_dir, split, batch_size):

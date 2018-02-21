@@ -1,5 +1,7 @@
 import tensorflow as tf
+
 from Utils import ops
+
 
 class GAN:
 	'''

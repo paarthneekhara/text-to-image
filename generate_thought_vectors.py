@@ -1,11 +1,11 @@
-import os
-from os.path import join, isfile
-import re
-import numpy as np
-import pickle
 import argparse
-import skipthoughts
+import os
+from os.path import join
+
 import h5py
+
+import skipthoughts
+
 
 def main():
 	parser = argparse.ArgumentParser()
